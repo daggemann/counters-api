@@ -44,7 +44,9 @@ def decrement_counter(id):
 @counters_blueprint.route('/counters/<id>', methods=['DELETE'])
 def delete_counter(id):
     # TODO: Should add a decorater that checks that id exists...
-    Counter.query.filter_by(id=id).delete()
+    counter = Counter.query.filter_by(id=id).first()
+    counter.delete_and_commit()
+
 
     # TODO: The below action should be extracted into a funtion because it is used in every request
     counters = Counter.get_all()

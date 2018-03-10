@@ -25,7 +25,8 @@ class Counter(db.Model):
         db.session.query(Counter).filter(Counter.id == self.id).delete()
         db.session.commit()
 
-    def commit(self):
+    @staticmethod
+    def commit():
         """
             Commit any changes to the database.
         """
