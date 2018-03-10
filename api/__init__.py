@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 # instantiate the db
 db = SQLAlchemy()
@@ -16,6 +17,7 @@ def create_app(script_info=None):
 
     # set up extensions
     db.init_app(app)
+    CORS(app)
 
     # Add endpoints
     from api.endpoints import counters_blueprint
