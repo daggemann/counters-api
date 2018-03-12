@@ -47,7 +47,6 @@ def delete_counter(id):
     counter = Counter.query.filter_by(id=id).first()
     counter.delete_and_commit()
 
-
     # TODO: The below action should be extracted into a funtion because it is used in every request
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
@@ -66,4 +65,3 @@ def add_counter():
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
     return jsonify(response_object), 201
-

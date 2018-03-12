@@ -69,7 +69,6 @@ class TestCounterModel(BaseTestCase):
         self.assertEqual(counters[0].title, "test1")
         self.assertEqual(counters[1].title, "test2")
 
-
     def test_convert_counter_to_dict(self):
         """
             Ensure that we can convert the counter to a dictionary representation.
@@ -79,4 +78,3 @@ class TestCounterModel(BaseTestCase):
 
         counter_dict = counter.to_dict()
         self.assertDictEqual(counter_dict, {'id': 1, 'title': "test", 'count': 0})
-
