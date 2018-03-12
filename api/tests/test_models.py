@@ -78,3 +78,13 @@ class TestCounterModel(BaseTestCase):
 
         counter_dict = counter.to_dict()
         self.assertDictEqual(counter_dict, {'id': 1, 'title': "test", 'count': 0})
+
+    def test_get_counter_by_id(self):
+        """
+            Ensure that we can get a counter by it's id.
+        """
+        counter = Counter("test")
+        counter.add_and_commit()
+
+        counter = Counter.get_by_id(counter.id)
+        self.assertEqual(counter.id, 1)

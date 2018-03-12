@@ -18,7 +18,7 @@ def get_counters():
 @counters_blueprint.route('/counters/<id>/increment', methods=['POST'])
 def increment_counter(id):
     # TODO: Should add a decorater that checks that id exists...
-    counter = Counter.query.filter_by(id=id).first()
+    counter = Counter.get_by_id(id)
     counter.count += 1
     counter.commit()
 
@@ -31,7 +31,7 @@ def increment_counter(id):
 @counters_blueprint.route('/counters/<id>/decrement', methods=['POST'])
 def decrement_counter(id):
     # TODO: Should add a decorater that checks that id exists...
-    counter = Counter.query.filter_by(id=id).first()
+    counter = Counter.get_by_id(id)
     counter.count -= 1
     counter.commit()
 
@@ -44,7 +44,7 @@ def decrement_counter(id):
 @counters_blueprint.route('/counters/<id>', methods=['DELETE'])
 def delete_counter(id):
     # TODO: Should add a decorater that checks that id exists...
-    counter = Counter.query.filter_by(id=id).first()
+    counter = Counter.get_by_id(id)
     counter.delete_and_commit()
 
     # TODO: The below action should be extracted into a funtion because it is used in every request

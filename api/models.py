@@ -45,3 +45,12 @@ class Counter(db.Model):
             Get all Counter instances from the database.
         """
         return db.session.query(Counter).all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        """
+            Get a counter by it's id.
+        :param id:
+        :return: counter
+        """
+        return Counter.query.filter_by(id=id).first()
