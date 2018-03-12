@@ -143,3 +143,29 @@ class TestCounterEndpoint(BaseTestCase):
             self.assertEqual(len(counters), 2)
             self.assertEqual(counters[1]['title'], "test2")
             self.assertEqual(counters[1]['count'], 0)
+
+    def test_add_counter_missing_title_in_payload(self):
+        """
+            Ensure that enpoint returns with 400 and message when title is missing from payload.
+        """
+        with self.client:
+            response = self.client.post(f'/counters',
+                                        data=json.dumps({}),
+                                        content_type='application/json')
+            message = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertDictEqual(message, {'status': 'error', 'reason': 'Invalid payload.'})
+
+    def test_add_counter_empty_title_in_payload(self):
+        """
+            Ensure that enpoint returns with 400 and message when title is empty in payload.
+        """
+        with self.client:
+            response = self.client.post(f'/counters',
+                                        data=json.dumps({'title': ''}),
+                                        content_type='application/json')
+            message = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertDictEqual(message, {'status': 'error', 'reason': 'Invalid payload.'})

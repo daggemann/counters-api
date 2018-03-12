@@ -26,6 +26,20 @@ def validate_counter(f):
 
     return decorated_function
 
+
+def required_fields(fields):
+    def actual_decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            payload = request.get_json()
+            for field in fields:
+                if field not in payload:
+                    return jsonify({'status': 'error', 'reason': 'Invalid payload.'}), 400
+            return f(*args, **kwargs)
+        return wrapper
+    return actual_decorator
+
+
 @counters_blueprint.route('/counters', methods=['GET'])
 def get_counters():
     """
@@ -72,11 +86,14 @@ def delete_counter(counter, id):
 
 
 @counters_blueprint.route('/counters', methods=['POST'])
+@required_fields(['title'])
 def add_counter():
     # TODO: Needs validation, possibly a decorator @required(('title', 'str'))
-    data = request.get_json()
-    new_counter = Counter(data['title'])
+    title = request.get_json()['title']
+    if len(title) == 0:
+        return jsonify({'status': 'error', 'reason': 'Invalid payload.'}), 400
 
+    new_counter = Counter(title)
     new_counter.add_and_commit()
 
     # TODO: The below action should be extracted into a funtion because it is used in every request
