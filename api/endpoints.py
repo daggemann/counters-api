@@ -36,7 +36,9 @@ def required_fields(fields):
                 if field not in payload:
                     return jsonify({'status': 'error', 'reason': 'Invalid payload.'}), 400
             return f(*args, **kwargs)
+
         return wrapper
+
     return actual_decorator
 
 
@@ -44,6 +46,8 @@ def required_fields(fields):
 def get_counters():
     """
         Return JSON representation of all existing counters.
+
+    :return: JSON representation of all existing counters (status code 200)
     """
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
@@ -53,10 +57,16 @@ def get_counters():
 @counters_blueprint.route('/counters/<id>/increment', methods=['POST'])
 @validate_counter
 def increment_counter(counter, id):
+    """
+        Increment the count for a counter. If id is not a valid id the validate_counter will return 404.
+
+    :param counter: provided by validate_counter decorator
+    :param id: provided by route decorator
+    :return: JSON representation of all existing counters (status code 200)
+    """
     counter.count += 1
     counter.commit()
 
-    # TODO: The below action should be extracted into a funtion because it is used in every request
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
     return jsonify(response_object), 200
@@ -65,10 +75,16 @@ def increment_counter(counter, id):
 @counters_blueprint.route('/counters/<id>/decrement', methods=['POST'])
 @validate_counter
 def decrement_counter(counter, id):
+    """
+        Decrement the count for a counter. If id is not a valid id the validate_counter will return 404.
+
+    :param counter: provided by validate_counter decorator
+    :param id: provided by route decorator
+    :return: JSON representation of all existing counters (status code 200)
+    """
     counter.count -= 1
     counter.commit()
 
-    # TODO: The below action should be extracted into a funtion because it is used in every request
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
     return jsonify(response_object), 200
@@ -77,9 +93,15 @@ def decrement_counter(counter, id):
 @counters_blueprint.route('/counters/<id>', methods=['DELETE'])
 @validate_counter
 def delete_counter(counter, id):
+    """
+        Delete a counter. If id is not a valid id the validate_counter will return 404.
+
+    :param counter: provided by validate_counter decorator
+    :param id: provided by route decorator
+    :return: JSON representation of all existing counters (status code 200)
+    """
     counter.delete_and_commit()
 
-    # TODO: The below action should be extracted into a funtion because it is used in every request
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
     return jsonify(response_object), 200
@@ -88,15 +110,21 @@ def delete_counter(counter, id):
 @counters_blueprint.route('/counters', methods=['POST'])
 @required_fields(['title'])
 def add_counter():
-    # TODO: Needs validation, possibly a decorator @required(('title', 'str'))
+    """
+        Add a new counter with title as provided in payload. If title is not given in payload the decorator
+        required_fields will return with 400.
+
+        Empty title is not allowed.
+
+    :return: JSON representation of all existing counters (status code 201)
+    """
     title = request.get_json()['title']
     if len(title) == 0:
         return jsonify({'status': 'error', 'reason': 'Invalid payload.'}), 400
 
-    new_counter = Counter(title)
-    new_counter.add_and_commit()
+    counter = Counter(title)
+    counter.add_and_commit()
 
-    # TODO: The below action should be extracted into a funtion because it is used in every request
     counters = Counter.get_all()
     response_object = [counter.to_dict() for counter in counters]
     return jsonify(response_object), 201
