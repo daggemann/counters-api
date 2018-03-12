@@ -2,11 +2,17 @@ import unittest
 
 from flask.cli import FlaskGroup
 
-from api import create_app
+from api import create_app, db
 
 app = create_app()
 
 cli = FlaskGroup(create_app=create_app)
+
+@cli.command()
+def recreate_db():
+    """ Recreate database."""
+    db.drop_all()
+    db.create_all()
 
 
 @cli.command()
