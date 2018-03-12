@@ -1,9 +1,30 @@
+from functools import wraps
+
 from flask import Blueprint, jsonify, request
 
 from api.models import Counter
 
 counters_blueprint = Blueprint('counters', '__name__')
 
+
+def validate_counter(f):
+    """
+        Decorator that validates if a counter with a given id exists.
+        If it exists it adds the counter as an argument to the decorated function.
+        If not it returns with a 404.
+    :param f:
+    :return:
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        id = kwargs['id']
+        counter = Counter.get_by_id(id)
+        if not counter:
+            return jsonify({'status': 'error', 'reason': 'Resource not found.'}), 404
+        return f(counter, *args, **kwargs)
+
+    return decorated_function
 
 @counters_blueprint.route('/counters', methods=['GET'])
 def get_counters():
@@ -16,9 +37,8 @@ def get_counters():
 
 
 @counters_blueprint.route('/counters/<id>/increment', methods=['POST'])
-def increment_counter(id):
-    # TODO: Should add a decorater that checks that id exists...
-    counter = Counter.get_by_id(id)
+@validate_counter
+def increment_counter(counter, id):
     counter.count += 1
     counter.commit()
 
@@ -29,9 +49,8 @@ def increment_counter(id):
 
 
 @counters_blueprint.route('/counters/<id>/decrement', methods=['POST'])
-def decrement_counter(id):
-    # TODO: Should add a decorater that checks that id exists...
-    counter = Counter.get_by_id(id)
+@validate_counter
+def decrement_counter(counter, id):
     counter.count -= 1
     counter.commit()
 
@@ -42,9 +61,8 @@ def decrement_counter(id):
 
 
 @counters_blueprint.route('/counters/<id>', methods=['DELETE'])
-def delete_counter(id):
-    # TODO: Should add a decorater that checks that id exists...
-    counter = Counter.get_by_id(id)
+@validate_counter
+def delete_counter(counter, id):
     counter.delete_and_commit()
 
     # TODO: The below action should be extracted into a funtion because it is used in every request

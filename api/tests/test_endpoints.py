@@ -47,6 +47,17 @@ class TestCounterEndpoint(BaseTestCase):
             self.assertEqual(len(counters), 2)
             self.assertEqual(counters[0]['count'], 1)
 
+    def test_increment_counter_invalid_id(self):
+        """
+            Ensure that endpoint returns 404 with message when id is not found.
+        """
+        with self.client:
+            response = self.client.post(f'/counters/1/increment', content_type='application/json')
+            message = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertDictEqual(message, {'status': 'error', 'reason': 'Resource not found.'})
+
     def test_decrement_counter(self):
         """
             Ensure that we can decrement a counter, and that we get back all counters.
@@ -68,6 +79,17 @@ class TestCounterEndpoint(BaseTestCase):
             self.assertEqual(len(counters), 2)
             self.assertEqual(counters[0]['count'], -1)
 
+    def test_decrement_counter_invalid_id(self):
+        """
+            Ensure that endpoint returns 404 with message when id is not found.
+        """
+        with self.client:
+            response = self.client.post(f'/counters/1/decrement', content_type='application/json')
+            message = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertDictEqual(message, {'status': 'error', 'reason': 'Resource not found.'})
+
     def test_delete_counter(self):
         """
             Ensure that we can delete a counter, and that we get back all other counters.
@@ -87,6 +109,17 @@ class TestCounterEndpoint(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(counters), 1)
             self.assertEqual(counters[0]['title'], "test2")
+
+    def test_delete_counter_invalid_id(self):
+        """
+            Ensure that endpoint returns 404 with message when id is not found.
+        """
+        with self.client:
+            response = self.client.delete(f'/counters/1')
+            message = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertDictEqual(message, {'status': 'error', 'reason': 'Resource not found.'})
 
     def test_add_counter(self):
         """
